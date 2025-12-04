@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Transformador de Excel — v3</title>
+<style>
+body { font-family: Arial, sans-serif; margin: 20px; background: #f5f5f5; }
+.container { background: white; padding: 20px; border-radius: 10px; max-width: 1000px; margin: auto; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+.row { display:flex; gap:10px; }
+input[type=text], select, input[type=file], button { padding: 10px; margin: 8px 0; }
+label { display:block; margin-top:8px; }
+button { background: #007bff; color: white; border: none; cursor: pointer; border-radius: 5px; }
+button:hover { background: #0056b3; }
+small { color: #555; }
+.result { margin-top: 12px; }
+table { width:100%; }
+</style>
+</head>
+<body>
+<div class="container">
+  <h2>PROGRAMA</h2>
+   <label for="carrera">Carrera:</label>
+  <select id="carrera">
+    <option value="ENFERMERIA">ENFERMERIA</option>
+    <option value="FARMACIA">FARMACIA</option>
+    <option value="FISIOTERAPIA">FISIOTERAPIA</option>
+  </select>
+
+  <label for="excel">Cargar Excel (.xlsx o .xls):</label>
+  <input type="file" id="excel" accept=".xlsx,.xls" />
+
+  <div class="row">
+    <button onclick="procesar()">Procesar y descargar transformado.xlsx</button>
+    <button onclick="mostrarPrevisualizacion()">Previsualizar primeros 5 registros</button>
+  </div>
+
+  <div id="previsual" class="result"></div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script>
+// Mapa de direcciones
+const direcciones = {
+  "CENTRAL": "Pasaje Nueva Rosita N° 140 - CERCADO DE LIMA",
+  "AREQUIPA 14": "Av. Arequipa N°1473-1481 - CERCADO DE LIMA",
+  "CLÍNICA": "Av. Alfonso Ugarte N°1061-1079-1085 y Jr. Chota N°1038-1062 - CERCADO DE LIMA",
+  "CLINICA": "Av. Alfonso Ugarte N°1061-1079-1085 y Jr. Chota N°1038-1062 - CERCADO DE LIMA",
+  "BELISARIO": "Av. Belisario Suarez Mz. C.-2 Lt 12 San Juan - SAN JUAN DE MIRAFLORES",
+  "BILLINGHURST": "Av. Guillermo Billinghurts Mz. F2 Lt. 32 Parcela D - SAN JUAN DE MIRAFLORES",
+  "MIGUEL IGLESIAS": "Av. Miguel Iglesias N° 890-888  - SAN JUAN DE MIRAFLORES",
+  "LOS CHINOS": "Av. San Juan N°721 Urb. San Juan Parcela A - SAN JUAN DE MIRAFLORES",
+  "SALAVERRY": "Jr. Carlos Augusto Salaverry Mz. C Lt. 26 Urb. Panamericana Norte - LOS OLIVOS",
+  "MENDIOLA": "Av. Alfredo Mendiola N° 3349 Mz. E Lt. 8, Urb. Panamericana Norte - LOS OLIVOS",
+  "HORACIO ZEVALLOS": "Av. Horario Zevallos con Carretera Central MZ A Lt 1-B Urb Las Praderas de Pariachi, Huaycan - ATE",
+  "ATE 01": "Av. Nicolas Ayllón N° 831 Lt. 140-B Parcelación del Fundo La Estrella - ATE",
+  "SJL 22": "Av. Próceres de la Independencia N° 2272 Mz. X Lt. 06 - APV San Hilarión - SAN JUAN DE LURIGANCHO",
+  "VILLA EL SALVADOR": "Urb. Parque Industrial - Parcela II Manzana K1 Lote 08A-08B - VILLA EL SALVADOR",
+  "ELEKTRA": "Av. Puente Piedra N° 712 - PUENTE PIEDRA",
+  "AREQUIPA 09": "Av. Arequipa N° 935 - CERCADO DE LIMA",
+  "CHOTA": "Sub lote A con frente al Jr. Chota Nº 1080 - 1098 - 1104 - 1108 - 1112 - 1116 - CERCADO DE LIMA",
+  "SAN LÁZARO": "Av. Carlos Alberto Izaguirre N° 230, Urb. Habilitación Industrial Panamericana Norte - INDEPENDENCIA",
+  "SJL 10": "Mz G, Lote 1 y 2 de la Urb. Los Jardines de San Juan - SAN JUAN DE LURIGANCHO",
+  "SJL 50": "Av. Próceres de la Independencia N° 5010 -5018, Programa Ciudad Mariscal Cáceres, Sector II - SAN JUAN DE LURIGANCHO",
+  "HORACIO 2": "Lote 1, Mz A Residencial Las Praderas de Pariachi - Tercera Etapa - ATE",
+  "PTE PIEDRA 2": "Manzana 78, Lote 8, Sub Lote 2, Avenida Miguel Grau N°191 - PUENTE PIEDRA",
+  "VILLA MARIA DEL TRIUNFO": "AAHH Villa María del Triunfo, Av. El Triunfo 481-485-487 (Mz H4, Lote 10), Sector Villa María del Triunfo - VMT",
+  "PACHACUTEC": "Lote 7 de la manzana B, con frente a Avenida Pachacutec, Parcela I del parque industrial del Cono Sur - VILLA EL SALVADOR",
+  "SJL 12": "Av. Santa Rosa de Lima 1231, sección 1-B Urbanización Las Flores - SAN JUAN DE LURIGANCHO",
+  "MANCHAY": "Av. Malasquez, Victor C3-5A C.P.R Huertos de Manchay Sect C Z. 5 PACHACAMAC CPR Huertos de Manchay - MANCHAY",
+  "VISTA ALEGRE": "Av. Nicolas Ayllón (EX Carretera Central) Asociacion de Propietarios del Parque Industrial 'El Sector' Mz Z Lote 2 - ATE"
+};
+
+function encontrarDireccion(localRaw) {
+  if (!localRaw) return '';
+  const txt = String(localRaw).toUpperCase();
+  // Buscar coincidencia por clave en el texto del local
+  for (const clave of Object.keys(direcciones)) {
+    if (txt.includes(clave)) return direcciones[clave];
+  }
+  // Si no hay coincidencias exactas por clave, intentar buscar palabras clave sueltas
+  for (const clave of Object.keys(direcciones)) {
+    const palabra = clave.split(' ')[0];
+    if (palabra && txt.includes(palabra)) return direcciones[clave];
+  }
+  return ''; // no encontrada
+}
+
+function procesar() {
+  const file = document.getElementById('excel').files[0];
+  const carrera = document.getElementById('carrera').value || '';
+  if (!file) return alert('Selecciona un archivo Excel.');
+  if (!carrera) return alert('Selecciona la carrera.');
+
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const data = new Uint8Array(e.target.result);
+    const workbook = XLSX.read(data, { type: 'array' });
+    const sheet = workbook.Sheets[workbook.SheetNames[0]];
+
+    const sheetAoA = XLSX.utils.sheet_to_json(sheet, { header:1, defval: '' });
+    if (sheetAoA.length < 1) return alert('El Excel no tiene encabezados.');
+
+    const headers = sheetAoA[0].map(h => (h===undefined||h===null)? '': String(h).trim());
+    const numericHeaders = headers.filter(h => /^\d+$/.test(h));
+    const headerIndex = {};
+    headers.forEach((h,i) => headerIndex[h]=i);
+
+    const rowsAoA = sheetAoA.slice(1);
+    if (rowsAoA.length === 0) return alert('No hay filas de datos en el Excel.');
+
+    const salidaArray = [];
+
+    rowsAoA.forEach(r => {
+      const aula = (headerIndex['AULA']!==undefined) ? String(r[headerIndex['AULA']]||'') : '';
+      const archivo = (carrera.substring(0,3).toUpperCase() || '') + '-' + aula;
+
+      const localPract = headerIndex['LOCAL DE PRÁCTICAS PRESENCIALES']!==undefined ? (r[headerIndex['LOCAL DE PRÁCTICAS PRESENCIALES']]||'') : '';
+      const direccionEncontrada = encontrarDireccion(localPract);
+
+      const base = {
+        'ARCHIVO': archivo,
+        'CARRERA': carrera.toUpperCase(),
+        'CURSO': headerIndex['CURSO']!==undefined ? (r[headerIndex['CURSO']]||'') : '',
+        'DOCENTE': headerIndex['DOCENTE']!==undefined ? (r[headerIndex['DOCENTE']]||'') : '',
+        'AULA': aula,
+        'ZOOM VIRTUALES': headerIndex['ZOOM VIRTUALES']!==undefined ? (r[headerIndex['ZOOM VIRTUALES']]||'') : '',
+        'PRÁCTICAS PRESENCIALES': headerIndex['PRÁCTICAS PRESENCIALES']!==undefined ? (r[headerIndex['PRÁCTICAS PRESENCIALES']]||'') : '',
+        'LOCAL DE PRÁCTICAS PRESENCIALES': localPract,
+        'DIRECCIÓN': direccionEncontrada
+      };
+
+      numericHeaders.forEach(nh => {
+        const idx = headerIndex[nh];
+        const cell = idx!==undefined ? String(r[idx]||'').trim() : '';
+        let imgVal = '';
+        if (cell === '✔') imgVal = 'ZOOM';
+        else if (cell === 'X') imgVal = '';
+        else if (cell !== '') imgVal = 'GP';
+        base['img' + nh] = imgVal;
+      });
+
+      numericHeaders.forEach(nh => {
+        const idx = headerIndex[nh];
+        const cell = idx!==undefined ? String(r[idx]||'').trim() : '';
+        let modVal = '';
+        if (cell === '✔' || cell === 'X') modVal = '';
+        else modVal = cell;
+        base['mod' + nh] = modVal;
+      });
+
+      salidaArray.push(base);
+    });
+
+    const salidaHeaders = ['ARCHIVO','CARRERA','CURSO','DOCENTE','AULA','ZOOM VIRTUALES','PRÁCTICAS PRESENCIALES','LOCAL DE PRÁCTICAS PRESENCIALES','DIRECCIÓN'];
+    numericHeaders.forEach(nh => salidaHeaders.push('img'+nh));
+    numericHeaders.forEach(nh => salidaHeaders.push('mod'+nh));
+
+    const ws = XLSX.utils.json_to_sheet(salidaArray, { header: salidaHeaders });
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Salida');
+    XLSX.writeFile(wb, 'PROGRAMA.xlsx');
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+function mostrarPrevisualizacion() {
+  const file = document.getElementById('excel').files[0];
+  const carrera = document.getElementById('carrera').value || '';
+  if (!file) return alert('Selecciona un archivo Excel.');
+  if (!carrera) return alert('Selecciona la carrera.');
+
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const data = new Uint8Array(e.target.result);
+    const workbook = XLSX.read(data, { type: 'array' });
+    const sheet = workbook.Sheets[workbook.SheetNames[0]];
+    const sheetAoA = XLSX.utils.sheet_to_json(sheet, { header:1, defval: '' });
+    if (sheetAoA.length < 1) return alert('El Excel no tiene encabezados.');
+
+    const headers = sheetAoA[0].map(h => (h===undefined||h===null)? '': String(h).trim());
+    const numericHeaders = headers.filter(h => /^\d+$/.test(h));
+    const headerIndex = {};
+    headers.forEach((h,i) => headerIndex[h]=i);
+
+    const rowsAoA = sheetAoA.slice(1,6);
+
+    let html = '<h3>Previsualización (hasta 5 filas)</h3>';
+    html += '<table border="1" cellpadding="6" style="border-collapse:collapse">';
+
+    html += '<tr>';
+    const salidaHeaders = ['ARCHIVO','CARRERA','CURSO','DOCENTE','AULA','ZOOM VIRTUALES','PRÁCTICAS PRESENCIALES','LOCAL DE PRÁCTICAS PRESENCIALES','DIRECCIÓN'];
+    salidaHeaders.forEach(h => html += '<th>'+h+'</th>');
+    numericHeaders.forEach(nh => html += '<th>img'+nh+'</th>');
+    numericHeaders.forEach(nh => html += '<th>mod'+nh+'</th>');
+    html += '</tr>';
+
+    rowsAoA.forEach(r => {
+      const aula = (headerIndex['AULA']!==undefined) ? String(r[headerIndex['AULA']]||'') : '';
+      const archivo = (carrera.substring(0,3).toUpperCase() || '') + '-' + aula;
+      const localPract = headerIndex['LOCAL DE PRÁCTICAS PRESENCIALES']!==undefined ? (r[headerIndex['LOCAL DE PRÁCTICAS PRESENCIALES']]||'') : '';
+      const direccionEncontrada = encontrarDireccion(localPract);
+
+      html += '<tr>';
+      html += '<td>'+archivo+'</td>';
+      html += '<td>'+carrera.toUpperCase()+'</td>';
+      html += '<td>'+ (headerIndex['CURSO']!==undefined ? (r[headerIndex['CURSO']]||'') : '') +'</td>';
+      html += '<td>'+ (headerIndex['DOCENTE']!==undefined ? (r[headerIndex['DOCENTE']]||'') : '') +'</td>';
+      html += '<td>'+ aula +'</td>';
+      html += '<td>'+ (headerIndex['ZOOM VIRTUALES']!==undefined ? (r[headerIndex['ZOOM VIRTUALES']]||'') : '') +'</td>';
+      html += '<td>'+ (headerIndex['PRÁCTICAS PRESENCIALES']!==undefined ? (r[headerIndex['PRÁCTICAS PRESENCIALES']]||'') : '') +'</td>';
+      html += '<td>'+ localPract +'</td>';
+      html += '<td>'+ direccionEncontrada +'</td>';
+
+      numericHeaders.forEach(nh => {
+        const idx = headerIndex[nh];
+        const cell = idx!==undefined ? String(r[idx]||'').trim() : '';
+        let imgVal = '';
+        if (cell === '✔') imgVal = 'ZOOM';
+        else if (cell === 'X') imgVal = '';
+        else if (cell !== '') imgVal = 'GP';
+        html += '<td>'+imgVal+'</td>';
+      });
+
+      numericHeaders.forEach(nh => {
+        const idx = headerIndex[nh];
+        const cell = idx!==undefined ? String(r[idx]||'').trim() : '';
+        let modVal = '';
+        if (cell === '✔' || cell === 'X') modVal = '';
+        else modVal = cell;
+        html += '<td>'+modVal+'</td>';
+      });
+
+      html += '</tr>';
+    });
+
+    html += '</table>';
+    document.getElementById('previsual').innerHTML = html;
+  };
+  reader.readAsArrayBuffer(file);
+}
+</script>
+</body>
+</html>
