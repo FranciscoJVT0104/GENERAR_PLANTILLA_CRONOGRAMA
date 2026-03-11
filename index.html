@@ -86,6 +86,52 @@ function encontrarDireccion(localRaw) {
   return ''; // no encontrada
 }
 
+function obtenerLocalPrincipal(sedePrincipal) {
+  const sede = String(sedePrincipal || '').trim();
+  const sedeUpper = sede.toUpperCase();
+  if (!sede) return '';
+  if (sedeUpper.includes('CLINICA') || sedeUpper.includes('CLÍNICA')) return 'CLÍNICA';
+  if (sede.includes('-')) {
+    const partes = sede.split('-').map(p => p.trim()).filter(Boolean);
+    if (partes.length > 0) return partes[partes.length - 1].toUpperCase();
+  }
+  return sede;
+}
+
+function contieneSOP(row, numericHeaders, headerIndex) {
+  return numericHeaders.some(nh => {
+    const idx = headerIndex[nh];
+    const cell = idx !== undefined ? String(row[idx] || '').trim().toUpperCase() : '';
+    return cell.includes('SOP');
+  });
+}
+
+function resolverSedesYDireccion(localRaw, row, numericHeaders, headerIndex) {
+  const local = String(localRaw || '').trim();
+  const partes = local.split('/').map(p => p.trim()).filter(Boolean);
+  const sopDetectado = contieneSOP(row, numericHeaders, headerIndex);
+
+  let sede1 = '';
+  let sede2 = '';
+
+  if (partes.length >= 2) {
+    sede1 = partes[0];
+    sede2 = partes.slice(1).join(' / ');
+  } else if (partes.length === 1 && sopDetectado) {
+    sede1 = 'CLINICA';
+    sede2 = partes[0];
+  } else {
+    sede1 = local;
+  }
+
+  const localPrincipal = obtenerLocalPrincipal(sede1);
+  const direccion1 = encontrarDireccion(sede1);
+  const direccion2 = encontrarDireccion(sede2);
+  const direccion = [direccion1, direccion2].filter((d, i, arr) => d && arr.indexOf(d) === i).join(' y ');
+
+  return { sede1, sede2, localPrincipal, direccion };
+}
+
 function procesar() {
   const file = document.getElementById('excel').files[0];
   const carrera = document.getElementById('carrera').value || '';
@@ -116,7 +162,7 @@ function procesar() {
       const archivo = (carrera.substring(0,3).toUpperCase() || '') + '-' + aula;
 
       const localPract = headerIndex['LOCAL DE PRÁCTICAS PRESENCIALES']!==undefined ? (r[headerIndex['LOCAL DE PRÁCTICAS PRESENCIALES']]||'') : '';
-      const direccionEncontrada = encontrarDireccion(localPract);
+      const { sede1, sede2, localPrincipal, direccion } = resolverSedesYDireccion(localPract, r, numericHeaders, headerIndex);
 
       const base = {
         'ARCHIVO': archivo,
@@ -126,8 +172,10 @@ function procesar() {
         'AULA': aula,
         'ZOOM VIRTUALES': headerIndex['ZOOM VIRTUALES']!==undefined ? (r[headerIndex['ZOOM VIRTUALES']]||'') : '',
         'PRÁCTICAS PRESENCIALES': headerIndex['PRÁCTICAS PRESENCIALES']!==undefined ? (r[headerIndex['PRÁCTICAS PRESENCIALES']]||'') : '',
-        'LOCAL DE PRÁCTICAS PRESENCIALES': localPract,
-        'DIRECCIÓN': direccionEncontrada
+        'SEDE1': sede1,
+        'SEDE2': sede2,
+        'LOCAL DE PRÁCTICAS PRESENCIALES': localPrincipal,
+        'DIRECCIÓN': direccion
       };
 
       numericHeaders.forEach(nh => {
@@ -152,7 +200,7 @@ function procesar() {
       salidaArray.push(base);
     });
 
-    const salidaHeaders = ['ARCHIVO','CARRERA','CURSO','DOCENTE','AULA','ZOOM VIRTUALES','PRÁCTICAS PRESENCIALES','LOCAL DE PRÁCTICAS PRESENCIALES','DIRECCIÓN'];
+    const salidaHeaders = ['ARCHIVO','CARRERA','CURSO','DOCENTE','AULA','ZOOM VIRTUALES','PRÁCTICAS PRESENCIALES','SEDE1','SEDE2','LOCAL DE PRÁCTICAS PRESENCIALES','DIRECCIÓN'];
     numericHeaders.forEach(nh => salidaHeaders.push('img'+nh));
     numericHeaders.forEach(nh => salidaHeaders.push('mod'+nh));
 
@@ -189,7 +237,7 @@ function mostrarPrevisualizacion() {
     html += '<table border="1" cellpadding="6" style="border-collapse:collapse">';
 
     html += '<tr>';
-    const salidaHeaders = ['ARCHIVO','CARRERA','CURSO','DOCENTE','AULA','ZOOM VIRTUALES','PRÁCTICAS PRESENCIALES','LOCAL DE PRÁCTICAS PRESENCIALES','DIRECCIÓN'];
+    const salidaHeaders = ['ARCHIVO','CARRERA','CURSO','DOCENTE','AULA','ZOOM VIRTUALES','PRÁCTICAS PRESENCIALES','SEDE1','SEDE2','LOCAL DE PRÁCTICAS PRESENCIALES','DIRECCIÓN'];
     salidaHeaders.forEach(h => html += '<th>'+h+'</th>');
     numericHeaders.forEach(nh => html += '<th>img'+nh+'</th>');
     numericHeaders.forEach(nh => html += '<th>mod'+nh+'</th>');
@@ -199,7 +247,7 @@ function mostrarPrevisualizacion() {
       const aula = (headerIndex['AULA']!==undefined) ? String(r[headerIndex['AULA']]||'') : '';
       const archivo = (carrera.substring(0,3).toUpperCase() || '') + '-' + aula;
       const localPract = headerIndex['LOCAL DE PRÁCTICAS PRESENCIALES']!==undefined ? (r[headerIndex['LOCAL DE PRÁCTICAS PRESENCIALES']]||'') : '';
-      const direccionEncontrada = encontrarDireccion(localPract);
+      const { sede1, sede2, localPrincipal, direccion } = resolverSedesYDireccion(localPract, r, numericHeaders, headerIndex);
 
       html += '<tr>';
       html += '<td>'+archivo+'</td>';
@@ -209,8 +257,10 @@ function mostrarPrevisualizacion() {
       html += '<td>'+ aula +'</td>';
       html += '<td>'+ (headerIndex['ZOOM VIRTUALES']!==undefined ? (r[headerIndex['ZOOM VIRTUALES']]||'') : '') +'</td>';
       html += '<td>'+ (headerIndex['PRÁCTICAS PRESENCIALES']!==undefined ? (r[headerIndex['PRÁCTICAS PRESENCIALES']]||'') : '') +'</td>';
-      html += '<td>'+ localPract +'</td>';
-      html += '<td>'+ direccionEncontrada +'</td>';
+      html += '<td>'+ sede1 +'</td>';
+      html += '<td>'+ sede2 +'</td>';
+      html += '<td>'+ localPrincipal +'</td>';
+      html += '<td>'+ direccion +'</td>';
 
       numericHeaders.forEach(nh => {
         const idx = headerIndex[nh];
