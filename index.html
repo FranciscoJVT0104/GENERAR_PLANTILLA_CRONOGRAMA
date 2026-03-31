@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Transformador de Excel — v3</title>
+    <title>PROGRAMACIONES</title>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -349,12 +349,23 @@
 
         function encontrarSedeYDireccion(localRaw) {
             if (!localRaw) return { clave: '', direccion: '' };
-            const txt = String(localRaw).toUpperCase().trim().replace(/\./g, "").replace(/\s+/g, " ");
+            const txt = String(localRaw).toUpperCase().trim();
+            const txtLimpio = txt.replace(/\./g, "").replace(/\s+/g, " ");
+
+            // Lógica específica para Arequipa para evitar confusiones Cdra 14 vs Cdra 09
+            if (txtLimpio.includes("AREQUIPA")) {
+                if (txtLimpio.includes("14") || txtLimpio.includes("1473") || txtLimpio.includes("1481")) {
+                    return { clave: "AREQUIPA 14", direccion: direcciones["AREQUIPA 14"] };
+                }
+                if (txtLimpio.includes("09") || txtLimpio.includes("935") || txtLimpio.includes(" 9 ")) {
+                    return { clave: "AREQUIPA 09", direccion: direcciones["AREQUIPA 09"] };
+                }
+            }
 
             // Buscar coincidencia por clave en el texto del local (normalizado)
             for (const clave of Object.keys(direcciones)) {
                 const claveLimpia = clave.toUpperCase().replace(/\./g, "").replace(/\s+/g, " ");
-                if (txt.includes(claveLimpia)) {
+                if (txtLimpio.includes(claveLimpia)) {
                     return { clave: clave, direccion: direcciones[clave] };
                 }
             }
@@ -483,7 +494,8 @@
                 const ws = XLSX.utils.json_to_sheet(salidaArray, { header: salidaHeaders });
                 const wb = XLSX.utils.book_new();
                 XLSX.utils.book_append_sheet(wb, ws, 'Salida');
-                XLSX.writeFile(wb, 'PROGRAMA.xlsx');
+                const nombreArchivo = `PROGRAMA-${carrera.toUpperCase()}.xlsx`;
+                XLSX.writeFile(wb, nombreArchivo);
             };
             reader.readAsArrayBuffer(file);
         }
