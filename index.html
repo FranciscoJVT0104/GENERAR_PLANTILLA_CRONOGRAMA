@@ -319,7 +319,7 @@
         // Mapa de direcciones
         const direcciones = {
             "CENTRAL": "Pasaje Nueva Rosita N° 140 - CERCADO DE LIMA",
-            "AV. AREQUIPA CDRA 14": "Av. Arequipa N°1473-1481 - CERCADO DE LIMA",
+            "AREQUIPA 14": "Av. Arequipa N°1473-1481 - CERCADO DE LIMA",
             "CLÍNICA": "Av. Alfonso Ugarte N°1061-1079-1085 - CERCADO DE LIMA",
             "CLINICA": "Av. Alfonso Ugarte N°1061-1079-1085 - CERCADO DE LIMA",
             "BELISARIO": "Av. Belisario Suarez Mz. C.-2 Lt 12 San Juan - SAN JUAN DE MIRAFLORES",
@@ -349,19 +349,12 @@
 
         function encontrarSedeYDireccion(localRaw) {
             if (!localRaw) return { clave: '', direccion: '' };
-            const txt = String(localRaw).toUpperCase();
+            const txt = String(localRaw).toUpperCase().trim().replace(/\./g, "").replace(/\s+/g, " ");
 
-            // Buscar coincidencia por clave en el texto del local
+            // Buscar coincidencia por clave en el texto del local (normalizado)
             for (const clave of Object.keys(direcciones)) {
-                if (txt.includes(clave)) {
-                    return { clave: clave, direccion: direcciones[clave] };
-                }
-            }
-
-            // Si no hay coincidencias exactas por clave, intentar buscar palabras clave sueltas
-            for (const clave of Object.keys(direcciones)) {
-                const palabra = clave.split(' ')[0];
-                if (palabra && txt.includes(palabra)) {
+                const claveLimpia = clave.toUpperCase().replace(/\./g, "").replace(/\s+/g, " ");
+                if (txt.includes(claveLimpia)) {
                     return { clave: clave, direccion: direcciones[clave] };
                 }
             }
