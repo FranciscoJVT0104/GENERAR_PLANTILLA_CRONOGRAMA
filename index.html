@@ -353,7 +353,7 @@
             const txtLimpio = txt.replace(/\./g, "").replace(/\s+/g, " ");
 
             // Lógica específica para Arequipa para evitar confusiones Cdra 14 vs Cdra 09
-            if (txtLimpio.includes("AREQUIPA")) {
+            if (txtLimpio.includes("AREQUIPA")||txtLimpio.includes("AREQ")) {
                 if (txtLimpio.includes("14") || txtLimpio.includes("1473") || txtLimpio.includes("1481")) {
                     return { clave: "AREQUIPA 14", direccion: direcciones["AREQUIPA 14"] };
                 }
