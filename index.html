@@ -19,6 +19,8 @@
             --border-color: #e5e7eb;
             --shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.05), 0 10px 20px -10px rgba(0, 0, 0, 0.05);
             --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --accent: #f59e0b;
+            --accent-hover: #d97706;
         }
 
         body {
@@ -190,6 +192,16 @@
             box-shadow: 0 8px 16px rgba(20, 184, 166, 0.35);
         }
 
+        .btn-template {
+            background: var(--accent) !important;
+            box-shadow: 0 4px 12px rgba(245, 158, 11, 0.25) !important;
+        }
+
+        .btn-template:hover {
+            background: var(--accent-hover) !important;
+            box-shadow: 0 8px 16px rgba(245, 158, 11, 0.35) !important;
+        }
+
         .result {
             margin-top: 40px;
             overflow-x: auto;
@@ -308,6 +320,15 @@
                     </path>
                 </svg>
                 Previsualizar 5 registros
+            </button>
+            <button onclick="location.href='PLANTILLA/PLANTILLA-PROGRAMAS.xlsx'" class="btn-template">
+                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
+                    </path>
+                </svg>
+                Descargar Plantilla
             </button>
         </div>
 
