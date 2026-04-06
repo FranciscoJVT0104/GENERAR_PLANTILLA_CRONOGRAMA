@@ -340,7 +340,7 @@
         // Mapa de direcciones
         const direcciones = {
             "CENTRAL": "Pasaje Nueva Rosita N° 140 - CERCADO DE LIMA",
-            "AREQUIPA 14": "Av. Arequipa N°1473-1481 - CERCADO DE LIMA",
+            "AV AREQUIPA 14": "Av. Arequipa N°1473-1481 - CERCADO DE LIMA",
             "CLÍNICA": "Av. Alfonso Ugarte N°1061-1079-1085 - CERCADO DE LIMA",
             "CLINICA": "Av. Alfonso Ugarte N°1061-1079-1085 - CERCADO DE LIMA",
             "BELISARIO": "Av. Belisario Suarez Mz. C.-2 Lt 12 San Juan - SAN JUAN DE MIRAFLORES",
@@ -354,7 +354,7 @@
             "SJL 22": "Av. Próceres de la Independencia N° 2272 Mz. X Lt. 06 - APV San Hilarión - SAN JUAN DE LURIGANCHO",
             "VILLA EL SALVADOR": "Urb. Parque Industrial - Parcela II Manzana K1 Lote 08A-08B - VILLA EL SALVADOR",
             "ELEKTRA": "Av. Puente Piedra N° 712 - PUENTE PIEDRA",
-            "AREQUIPA 09": "Av. Arequipa N° 935 - CERCADO DE LIMA",
+            "AV AREQUIPA 09": "Av. Arequipa N° 935 - CERCADO DE LIMA",
             "CHOTA": "Sub lote A con frente al Jr. Chota Nº 1080 - 1098 - 1104 - 1108 - 1112 - 1116 - CERCADO DE LIMA",
             "SAN LÁZARO": "Av. Carlos Alberto Izaguirre N° 230, Urb. Habilitación Industrial Panamericana Norte - INDEPENDENCIA",
             "SJL 10": "Mz G, Lote 1 y 2 de la Urb. Los Jardines de San Juan - SAN JUAN DE LURIGANCHO",
@@ -374,12 +374,12 @@
             const txtLimpio = txt.replace(/\./g, "").replace(/\s+/g, " ");
 
             // Lógica específica para Arequipa para evitar confusiones Cdra 14 vs Cdra 09
-            if (txtLimpio.includes("AREQUIPA") || txtLimpio.includes("AREQ")) {
+            if (txtLimpio.includes("AREQUIPA") || txtLimpio.includes("AREQ") || txtLimpio.includes("AV AREQUIPA") || txtLimpio.includes("AV AREQ")) {
                 if (txtLimpio.includes("14") || txtLimpio.includes("1473") || txtLimpio.includes("1481")) {
-                    return { clave: "AREQUIPA 14", direccion: direcciones["AREQUIPA 14"] };
+                    return { clave: "AV AREQUIPA 14", direccion: direcciones["AREQUIPA 14"] };
                 }
                 if (txtLimpio.includes("09") || txtLimpio.includes("935") || txtLimpio.includes(" 9 ")) {
-                    return { clave: "AREQUIPA 09", direccion: direcciones["AREQUIPA 09"] };
+                    return { clave: "AV AREQUIPA 09", direccion: direcciones["AREQUIPA 09"] };
                 }
             }
 
