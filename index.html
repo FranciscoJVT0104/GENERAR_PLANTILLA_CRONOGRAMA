@@ -238,7 +238,6 @@
             background-color: #f8fafc;
             font-weight: 600;
             color: var(--text-muted);
-            text-transform: uppercase;
             font-size: 0.8rem;
             letter-spacing: 0.05em;
         }
@@ -475,7 +474,7 @@
                 const sheetAoA = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: '' });
                 if (sheetAoA.length < 1) return alert('El Excel no tiene encabezados.');
 
-                const headers = sheetAoA[0].map(h => (h === undefined || h === null) ? '' : String(h).trim());
+                const headers = sheetAoA[0].map(h => (h === undefined || h === null) ? '' : String(h).trim().toUpperCase());
                 const numericHeaders = headers.filter(h => /^\d+$/.test(h));
                 const headerIndex = {};
                 headers.forEach((h, i) => headerIndex[h] = i);
@@ -502,14 +501,14 @@
                         'carrera': carrera.toUpperCase(),
                         'curso': headerIndex['CURSO'] !== undefined ? String(r[headerIndex['CURSO']] || '').toUpperCase() : '',
                         'docente': headerIndex['DOCENTE'] !== undefined ? String(r[headerIndex['DOCENTE']] || '').toUpperCase() : '',
-                        'aula': aula.toUpperCase(),
+                        'aula': String(aula).toUpperCase(),
                         'zoom virtuales': headerIndex['ZOOM VIRTUALES'] !== undefined ? String(r[headerIndex['ZOOM VIRTUALES']] || '').toUpperCase() : '',
                         'prácticas presenciales': headerIndex['PRÁCTICAS PRESENCIALES'] !== undefined ? String(r[headerIndex['PRÁCTICAS PRESENCIALES']] || '').toUpperCase() : '',
                         'sede1': sede1.toUpperCase(),
                         'sede2': sede2.toUpperCase(),
                         'local de prácticas presenciales': localPrincipal.toUpperCase(),
-                        'dirección': direccion.toUpperCase(),
-                        'dirección2': direccion2.toUpperCase()
+                        'dirección': direccion,
+                        'dirección2': direccion2
                     };
 
                     numericHeaders.forEach(nh => {
@@ -551,7 +550,7 @@
                 const sheetAoA = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: '' });
                 if (sheetAoA.length < 1) return alert('El Excel no tiene encabezados.');
 
-                const headers = sheetAoA[0].map(h => (h === undefined || h === null) ? '' : String(h).trim());
+                const headers = sheetAoA[0].map(h => (h === undefined || h === null) ? '' : String(h).trim().toUpperCase());
                 const numericHeaders = headers.filter(h => /^\d+$/.test(h));
                 const headerIndex = {};
                 headers.forEach((h, i) => headerIndex[h] = i);
@@ -589,8 +588,8 @@
                     html += '<td>' + sede1.toUpperCase() + '</td>';
                     html += '<td>' + sede2.toUpperCase() + '</td>';
                     html += '<td>' + localPrincipal.toUpperCase() + '</td>';
-                    html += '<td>' + direccion.toUpperCase() + '</td>';
-                    html += '<td>' + direccion2.toUpperCase() + '</td>';
+                    html += '<td>' + direccion + '</td>';
+                    html += '<td>' + direccion2 + '</td>';
 
                     numericHeaders.forEach(nh => {
                         const idx = headerIndex[nh];
