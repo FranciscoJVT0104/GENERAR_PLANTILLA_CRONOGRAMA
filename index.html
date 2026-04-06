@@ -621,7 +621,6 @@
                     html += '<td>' + localPrincipal.toUpperCase() + '</td>';
                     html += '<td>' + direccion + '</td>';
                     html += '<td>' + direccion2 + '</td>';
-
                     numericHeaders.forEach(nh => {
                         const idx = headerIndex[nh];
                         const cell = idx !== undefined ? String(r[idx] || '').trim() : '';
@@ -631,10 +630,8 @@
                         else imgVal = cell;
                         html += '<td>' + imgVal.toUpperCase() + '</td>';
                     });
-
                     html += '</tr>';
                 });
-
                 html += '</table>';
                 document.getElementById('previsual').innerHTML = html;
             };
@@ -642,5 +639,4 @@
         }
     </script>
 </body>
-
 </html>
