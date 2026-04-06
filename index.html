@@ -498,18 +498,18 @@
                     const { sede1, sede2, localPrincipal, direccion, direccion2 } = resolverSedesYDireccion(localPract, r, numericHeaders, headerIndex);
 
                     const base = {
-                        'img-name': imgName,
+                        'img-name': imgName.toUpperCase(),
                         'carrera': carrera.toUpperCase(),
-                        'curso': headerIndex['CURSO'] !== undefined ? (r[headerIndex['CURSO']] || '') : '',
-                        'docente': headerIndex['DOCENTE'] !== undefined ? (r[headerIndex['DOCENTE']] || '') : '',
-                        'aula': aula,
-                        'zoom virtuales': headerIndex['ZOOM VIRTUALES'] !== undefined ? (r[headerIndex['ZOOM VIRTUALES']] || '') : '',
-                        'prácticas presenciales': headerIndex['PRÁCTICAS PRESENCIALES'] !== undefined ? (r[headerIndex['PRÁCTICAS PRESENCIALES']] || '') : '',
-                        'sede1': sede1,
-                        'sede2': sede2,
-                        'local de prácticas presenciales': localPrincipal,
-                        'dirección': direccion,
-                        'dirección2': direccion2
+                        'curso': headerIndex['CURSO'] !== undefined ? String(r[headerIndex['CURSO']] || '').toUpperCase() : '',
+                        'docente': headerIndex['DOCENTE'] !== undefined ? String(r[headerIndex['DOCENTE']] || '').toUpperCase() : '',
+                        'aula': aula.toUpperCase(),
+                        'zoom virtuales': headerIndex['ZOOM VIRTUALES'] !== undefined ? String(r[headerIndex['ZOOM VIRTUALES']] || '').toUpperCase() : '',
+                        'prácticas presenciales': headerIndex['PRÁCTICAS PRESENCIALES'] !== undefined ? String(r[headerIndex['PRÁCTICAS PRESENCIALES']] || '').toUpperCase() : '',
+                        'sede1': sede1.toUpperCase(),
+                        'sede2': sede2.toUpperCase(),
+                        'local de prácticas presenciales': localPrincipal.toUpperCase(),
+                        'dirección': direccion.toUpperCase(),
+                        'dirección2': direccion2.toUpperCase()
                     };
 
                     numericHeaders.forEach(nh => {
@@ -519,7 +519,7 @@
                         if (esMarcaCheck(cell)) imgVal = 'ZOOM';
                         else if (cell.toUpperCase() === 'X') imgVal = '';
                         else imgVal = cell;
-                        base['img' + nh] = imgVal;
+                        base['img' + nh] = imgVal.toUpperCase();
                     });
 
                     salidaArray.push(base);
@@ -573,24 +573,24 @@
                         return;
                     }
 
-                    const aula = (headerIndex['AULA'] !== undefined) ? String(r[headerIndex['AULA']] || '') : '';
+                    const aula = (headerIndex['AULA'] !== undefined) ? String(r[headerIndex['AULA']] || '').toUpperCase() : '';
                     const imgName = (carrera.substring(0, 3).toUpperCase() || '') + '-' + aula;
                     const localPract = headerIndex['LOCAL DE PRÁCTICAS PRESENCIALES'] !== undefined ? (r[headerIndex['LOCAL DE PRÁCTICAS PRESENCIALES']] || '') : '';
                     const { sede1, sede2, localPrincipal, direccion, direccion2 } = resolverSedesYDireccion(localPract, r, numericHeaders, headerIndex);
 
                     html += '<tr>';
-                    html += '<td>' + imgName + '</td>';
+                    html += '<td>' + imgName.toUpperCase() + '</td>';
                     html += '<td>' + carrera.toUpperCase() + '</td>';
-                    html += '<td>' + (headerIndex['CURSO'] !== undefined ? (r[headerIndex['CURSO']] || '') : '') + '</td>';
-                    html += '<td>' + (headerIndex['DOCENTE'] !== undefined ? (r[headerIndex['DOCENTE']] || '') : '') + '</td>';
+                    html += '<td>' + (headerIndex['CURSO'] !== undefined ? String(r[headerIndex['CURSO']] || '').toUpperCase() : '') + '</td>';
+                    html += '<td>' + (headerIndex['DOCENTE'] !== undefined ? String(r[headerIndex['DOCENTE']] || '').toUpperCase() : '') + '</td>';
                     html += '<td>' + aula + '</td>';
-                    html += '<td>' + (headerIndex['ZOOM VIRTUALES'] !== undefined ? (r[headerIndex['ZOOM VIRTUALES']] || '') : '') + '</td>';
-                    html += '<td>' + (headerIndex['PRÁCTICAS PRESENCIALES'] !== undefined ? (r[headerIndex['PRÁCTICAS PRESENCIALES']] || '') : '') + '</td>';
-                    html += '<td>' + sede1 + '</td>';
-                    html += '<td>' + sede2 + '</td>';
-                    html += '<td>' + localPrincipal + '</td>';
-                    html += '<td>' + direccion + '</td>';
-                    html += '<td>' + direccion2 + '</td>';
+                    html += '<td>' + (headerIndex['ZOOM VIRTUALES'] !== undefined ? String(r[headerIndex['ZOOM VIRTUALES']] || '').toUpperCase() : '') + '</td>';
+                    html += '<td>' + (headerIndex['PRÁCTICAS PRESENCIALES'] !== undefined ? String(r[headerIndex['PRÁCTICAS PRESENCIALES']] || '').toUpperCase() : '') + '</td>';
+                    html += '<td>' + sede1.toUpperCase() + '</td>';
+                    html += '<td>' + sede2.toUpperCase() + '</td>';
+                    html += '<td>' + localPrincipal.toUpperCase() + '</td>';
+                    html += '<td>' + direccion.toUpperCase() + '</td>';
+                    html += '<td>' + direccion2.toUpperCase() + '</td>';
 
                     numericHeaders.forEach(nh => {
                         const idx = headerIndex[nh];
@@ -599,7 +599,7 @@
                         if (esMarcaCheck(cell)) imgVal = 'ZOOM';
                         else if (cell.toUpperCase() === 'X') imgVal = '';
                         else imgVal = cell;
-                        html += '<td>' + imgVal + '</td>';
+                        html += '<td>' + imgVal.toUpperCase() + '</td>';
                     });
 
                     html += '</tr>';
