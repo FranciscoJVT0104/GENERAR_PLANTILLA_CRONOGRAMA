@@ -375,10 +375,10 @@
             // Lógica específica para Arequipa para evitar confusiones Cdra 14 vs Cdra 09
             if (txtLimpio.includes("AREQUIPA") || txtLimpio.includes("AREQ") || txtLimpio.includes("AV AREQUIPA") || txtLimpio.includes("AV AREQ")) {
                 if (txtLimpio.includes("14") || txtLimpio.includes("1473") || txtLimpio.includes("1481")) {
-                    return { clave: "AV AREQUIPA 14", direccion: direcciones["AREQUIPA 14"] };
+                    return { clave: "AV AREQUIPA 14", direccion: direcciones["AV AREQUIPA 14"] };
                 }
                 if (txtLimpio.includes("09") || txtLimpio.includes("935") || txtLimpio.includes(" 9 ")) {
-                    return { clave: "AV AREQUIPA 09", direccion: direcciones["AREQUIPA 09"] };
+                    return { clave: "AV AREQUIPA 09", direccion: direcciones["AV AREQUIPA 09"] };
                 }
             }
 
