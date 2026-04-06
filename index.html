@@ -389,6 +389,13 @@
                 }
             }
 
+            // Lógica específica para VILLA EL SALVADOR
+            if (txtLimpio.includes("VES")) {
+                if (txtLimpio.includes("1")) {
+                return { clave: "VILLA EL SALVADOR", direccion: direcciones["VILLA EL SALVADOR"] };
+                }
+            }
+
             // Lógica específica para SJL
             if (txtLimpio.includes("SJL")) {
                 if (txtLimpio.includes("50")) {
