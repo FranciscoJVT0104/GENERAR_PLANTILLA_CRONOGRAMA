@@ -389,6 +389,22 @@
                 }
             }
 
+            // Lógica específica para SJL
+            if (txtLimpio.includes("SJL")) {
+                if (txtLimpio.includes("50")) {
+                    return { clave: "SJL 50", direccion: direcciones["SJL 50"] };
+                }
+                if (txtLimpio.includes("10")) {
+                    return { clave: "SJL 10", direccion: direcciones["SJL 10"] };
+                }
+                if (txtLimpio.includes("12")) {
+                    return { clave: "SJL 12", direccion: direcciones["SJL 12"] };
+                }
+                if (txtLimpio.includes("22")) {
+                    return { clave: "SJL 22", direccion: direcciones["SJL 22"] };
+                }
+            }
+
             // Buscar coincidencia por clave en el texto del local (normalizado)
             for (const clave of Object.keys(direcciones)) {
                 const claveLimpia = clave.toUpperCase().replace(/\./g, "").replace(/\s+/g, " ");
