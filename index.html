@@ -353,7 +353,7 @@
             const txtLimpio = txt.replace(/\./g, "").replace(/\s+/g, " ");
 
             // Lógica específica para Arequipa para evitar confusiones Cdra 14 vs Cdra 09
-            if (txtLimpio.includes("AREQUIPA")||txtLimpio.includes("AREQ")) {
+            if (txtLimpio.includes("AREQUIPA") || txtLimpio.includes("AREQ")) {
                 if (txtLimpio.includes("14") || txtLimpio.includes("1473") || txtLimpio.includes("1481")) {
                     return { clave: "AREQUIPA 14", direccion: direcciones["AREQUIPA 14"] };
                 }
@@ -465,6 +465,11 @@
                 const salidaArray = [];
 
                 rowsAoA.forEach(r => {
+                    // Validar si la fila está vacía para no procesarla
+                    if (!r || r.length === 0 || r.every(cell => !cell || String(cell).trim() === '')) {
+                        return;
+                    }
+
                     const aula = (headerIndex['AULA'] !== undefined) ? String(r[headerIndex['AULA']] || '') : '';
                     const imgName = (carrera.substring(0, 3).toUpperCase() || '') + '-' + aula;
 
@@ -542,6 +547,11 @@
                 html += '</tr>';
 
                 rowsAoA.forEach(r => {
+                    // Validar si la fila está vacía para no mostrarla en la previsualización
+                    if (!r || r.length === 0 || r.every(cell => !cell || String(cell).trim() === '')) {
+                        return;
+                    }
+
                     const aula = (headerIndex['AULA'] !== undefined) ? String(r[headerIndex['AULA']] || '') : '';
                     const imgName = (carrera.substring(0, 3).toUpperCase() || '') + '-' + aula;
                     const localPract = headerIndex['LOCAL DE PRÁCTICAS PRESENCIALES'] !== undefined ? (r[headerIndex['LOCAL DE PRÁCTICAS PRESENCIALES']] || '') : '';
