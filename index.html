@@ -382,6 +382,13 @@
                 }
             }
 
+            // Lógica específica para puente piedra
+            if (txtLimpio.includes("PUENTE") || txtLimpio.includes("PTE")) {
+                if (txtLimpio.includes("PIEDRA") || txtLimpio.includes("PDRA") || txtLimpio.includes("PDR")) {
+                    return { clave: "PTE PIEDRA 2", direccion: direcciones["PTE PIEDRA 2"] };
+                }
+            }
+
             // Buscar coincidencia por clave en el texto del local (normalizado)
             for (const clave of Object.keys(direcciones)) {
                 const claveLimpia = clave.toUpperCase().replace(/\./g, "").replace(/\s+/g, " ");
