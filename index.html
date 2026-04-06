@@ -413,13 +413,10 @@
                 }
             }
 
-            // Fallback si no está en direcciones (lógica similar a obtenerLocalPrincipal anterior)
+            // Fallback si no está en direcciones (devolvemos el nombre completo normalizado)
             let fallbackSede = String(localRaw).trim().toUpperCase();
             if (fallbackSede.includes('CLINICA') || fallbackSede.includes('CLÍNICA')) {
                 fallbackSede = 'CLÍNICA';
-            } else if (fallbackSede.includes('-')) {
-                const partes = fallbackSede.split('-').map(p => p.trim()).filter(Boolean);
-                if (partes.length > 0) fallbackSede = partes[partes.length - 1];
             }
 
             return { clave: fallbackSede, direccion: '' };
@@ -441,9 +438,9 @@
 
         function resolverSedesYDireccion(localRaw, row, numericHeaders, headerIndex) {
             const local = String(localRaw || '').trim();
-            // Separador: dividimos por '/' (con o sin espacios) o por ' - ' (guion rodeado de espacios)
-            // Esto evita romper casos como 'SJL-50' o 'PTE-PIEDRA'
-            const partes = local.split(/ \/ | \/|\/| \- /).map(p => p.trim()).filter(Boolean);
+            // Separador: ÚnicAMENTE dividimos por '/' para locales múltiples (ej: CENTRAL / CLINICA)
+            // No dividimos por '-' para no romper nombres como 'SJL-50'
+            const partes = local.split(/ \/ | \/|\/ /).map(p => p.trim()).filter(Boolean);
             const sopDetectado = contieneSOP(row, numericHeaders, headerIndex);
 
             let sede1Raw = '';
