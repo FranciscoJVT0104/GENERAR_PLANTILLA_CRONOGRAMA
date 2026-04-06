@@ -385,14 +385,17 @@
             // Lógica específica para puente piedra
             if (txtLimpio.includes("PUENTE") || txtLimpio.includes("PTE")) {
                 if (txtLimpio.includes("PIEDRA") || txtLimpio.includes("PDRA") || txtLimpio.includes("PDR")) {
-                    return { clave: "PTE PIEDRA 2", direccion: direcciones["PTE PIEDRA 2"] };
+                    return { clave: "PACHACUTEC", direccion: direcciones["PACHACUTEC"] };
                 }
             }
 
             // Lógica específica para VILLA EL SALVADOR
             if (txtLimpio.includes("VES")) {
                 if (txtLimpio.includes("1")) {
-                return { clave: "VILLA EL SALVADOR", direccion: direcciones["VILLA EL SALVADOR"] };
+                    return { clave: "VILLA EL SALVADOR", direccion: direcciones["VILLA EL SALVADOR"] };
+                }
+                if (txtLimpio.includes("2")) {
+                    return { clave: "VILLA EL SALVADOR", direccion: direcciones["VILLA EL SALVADOR"] };
                 }
             }
 
