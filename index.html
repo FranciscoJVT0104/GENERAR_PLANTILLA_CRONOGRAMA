@@ -400,7 +400,7 @@
             }
 
             // Lógica específica para SJL
-            if (txtLimpio.includes("SJL")) {
+            if (txtLimpio.includes("SJL-")) {
                 if (txtLimpio.includes("50")) {
                     return { clave: "SJL 50", direccion: direcciones["SJL 50"] };
                 }
@@ -448,9 +448,9 @@
 
         function resolverSedesYDireccion(localRaw, row, numericHeaders, headerIndex) {
             const local = String(localRaw || '').trim();
-            // Separador: ÚnicAMENTE dividimos por '/' para locales múltiples (ej: CENTRAL / CLINICA)
-            // No dividimos por '-' para no romper nombres como 'SJL-50'
-            const partes = local.split(/ \/ | \/|\/ /).map(p => p.trim()).filter(Boolean);
+            // Separador: dividimos por '/' o por variaciones de guiones (usando lookahead negativo para no romper nombres como 'SJL-50')
+            // Se incluyen guiones largos (—, –) comunes en archivos de Excel.
+            const partes = local.split(/\s*[\/]\s*|\s*[—–-](?!\d)\s*/).map(p => p.trim()).filter(Boolean);
             const sopDetectado = contieneSOP(row, numericHeaders, headerIndex);
 
             let sede1Raw = '';
@@ -460,19 +460,20 @@
                 sede1Raw = partes[0];
                 sede2Raw = partes.slice(1).join(' / ');
             } else if (partes.length === 1 && sopDetectado) {
-                sede1Raw = 'CLINICA';
-                sede2Raw = partes[0];
+                const matchTemp = encontrarSedeYDireccion(partes[0]);
+                if (matchTemp.clave === 'CLINICA') {
+                    sede1Raw = partes[0];
+                    sede2Raw = '';
+                } else {
+                    sede1Raw = 'CLINICA';
+                    sede2Raw = partes[0];
+                }
             } else {
                 sede1Raw = local;
             }
 
             let match1 = encontrarSedeYDireccion(sede1Raw);
             let match2 = encontrarSedeYDireccion(sede2Raw);
-
-            // Regla: si Sede 1 es CLINICA y Sede 2 es CENTRAL, ignorar Sede 2
-            if (match1.clave === 'CLINICA' && match2.clave === 'CENTRAL') {
-                match2 = { clave: '', direccion: '' };
-            }
 
             // Evitar duplicados (ej: si Sede 1 es CLINICA y Sede 2 quedó como CLINICA-ELEKTRA)
             if (match1.clave && match1.clave === match2.clave) {
