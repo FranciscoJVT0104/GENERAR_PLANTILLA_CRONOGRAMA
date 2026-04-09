@@ -548,7 +548,7 @@
                         const cell = idx !== undefined ? String(r[idx] || '').trim() : '';
                         let imgVal = '';
                         if (esMarcaCheck(cell)) imgVal = 'ZOOM';
-                        else if (cell.toUpperCase() === 'X') imgVal = '';
+                        else if (cell.toUpperCase() === 'X' || cell.toUpperCase() === 'LIBRE') imgVal = '';
                         else imgVal = cell;
                         base['img' + nh] = imgVal.toUpperCase();
                     });
@@ -627,7 +627,7 @@
                         const cell = idx !== undefined ? String(r[idx] || '').trim() : '';
                         let imgVal = '';
                         if (esMarcaCheck(cell)) imgVal = 'ZOOM';
-                        else if (cell.toUpperCase() === 'X') imgVal = '';
+                        else if (cell.toUpperCase() === 'X' || cell.toUpperCase() === 'LIBRE') imgVal = '';
                         else imgVal = cell;
                         html += '<td>' + imgVal.toUpperCase() + '</td>';
                     });
