@@ -382,6 +382,10 @@
                 }
             }
 
+             if (txtLimpio.includes("CHINOS")) {
+                    return { clave: "LOS CHINOS", direccion: direcciones["LOS CHINOS"] };
+            }
+            
             // Lógica específica para puente piedra
             if (txtLimpio.includes("PUENTE") || txtLimpio.includes("PTE")) {
                 if (txtLimpio.includes("PIEDRA") || txtLimpio.includes("PDRA") || txtLimpio.includes("PDR")) {
