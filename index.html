@@ -385,6 +385,10 @@
              if (txtLimpio.includes("CHINOS")) {
                     return { clave: "LOS CHINOS", direccion: direcciones["LOS CHINOS"] };
             }
+
+             if (txtLimpio.includes("SAN LAZARO")) {
+                    return { clave: "SAN LÁZARO", direccion: direcciones["SAN LÁZARO"] };
+            }
             
             // Lógica específica para puente piedra
             if (txtLimpio.includes("PUENTE") || txtLimpio.includes("PTE")) {
